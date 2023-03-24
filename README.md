@@ -8,3 +8,5 @@ Quick links for Netty-based and CRT-based Main classes below:
 - [CRT Main Class](./java-v2-crt/src/main/java/org/example/Main.java)
 
 NB: Tests were run in ECS container with VPC endpoint to CMK DynamoDB table.
+
+The utils folder contains some Python scripts to print out metrics and errors.

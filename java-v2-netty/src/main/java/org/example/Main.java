@@ -34,7 +34,7 @@ public class Main {
     private static final Integer DEFAULT_DURATION = 60000;
 
     private static final String TABLE_NAME = System.getenv().getOrDefault("DYNAMODB_TABLE",
-            "ecs-javav2-cmk-netty-60-sk");
+            "ecs-javav2-netty-cmk");
     private static final long INTERVAL_MS = Long
             .parseLong(System.getenv().getOrDefault("DURATION", DEFAULT_DURATION.toString()));
 
@@ -59,24 +59,18 @@ public class Main {
 
     private static DynamoDbEnhancedAsyncClient enhancedAsyncClient = DynamoDbEnhancedAsyncClient
             .builder()
-            .dynamoDbClient(
-                    DynamoDbAsyncClient.builder()
-                            .httpClient(NettyNioAsyncHttpClient.builder()
-                                    .useIdleConnectionReaper(false).build())
-                            .overrideConfiguration(ClientOverrideConfiguration.builder()
-                                    .addMetricPublisher(metricsPub)
-                                    .apiCallTimeout(Duration.ofMillis(
-                                            APICALLTIMEOUT_DURATION))
+            .dynamoDbClient(DynamoDbAsyncClient.builder()
+                    .httpClient(NettyNioAsyncHttpClient.builder().useIdleConnectionReaper(false)
+                            .build())
+                    .overrideConfiguration(
+                            ClientOverrideConfiguration.builder().addMetricPublisher(metricsPub)
+                                    .apiCallTimeout(Duration.ofMillis(APICALLTIMEOUT_DURATION))
                                     .apiCallAttemptTimeout(
-                                            Duration.ofMillis(
-                                                    APICALLATTEMPTTIMEOUT_DURATION))
-                                    .retryPolicy(RetryPolicy.builder()
-                                            .numRetries(RETRY_NUMRETRIES)
-                                            .backoffStrategy(
-                                                    backoffStrategy)
-                                            .build())
+                                            Duration.ofMillis(APICALLATTEMPTTIMEOUT_DURATION))
+                                    .retryPolicy(RetryPolicy.builder().numRetries(RETRY_NUMRETRIES)
+                                            .backoffStrategy(backoffStrategy).build())
                                     .build())
-                            .region(REGION).build())
+                    .region(REGION).build())
             .build();
 
     private static DynamoDbAsyncTable<MyItem> myItemTable = enhancedAsyncClient.table(TABLE_NAME,
